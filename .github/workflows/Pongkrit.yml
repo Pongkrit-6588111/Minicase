@@ -1,55 +1,37 @@
-name: Java CI 
+name: Java CI
 
- 
+on:
+  push:
+    branches:
+      - 'Pongkrit'  # Correct indentation
 
-on: 
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-  push: 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 1  # Change to 1 since env.PR_FETCH_DEPTH might not be defined
 
-    branches: 
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11'
 
-      - Pongkrit 
+      - name: Verify Directory Structure
+        run: ls -R
 
- 
-
-jobs: 
-
-  build: 
-
-    runs-on: ubuntu-latest 
-
- 
-
-    steps: 
-
-    - name: Checkout code 
-
-      uses: actions/checkout@v3 
-
-      with: 
-
-        ref: ${{ github.event.pull_request.head.ref }} 
-
-        fetch-depth: ${{ env.PR_FETCH_DEPTH }} 
-
- 
-
-    - name: Set up JDK 
-
-      uses: actions/setup-java@v1 
-
-      with: 
-
-        java-version: '11' # You can change this to the version you want 
-
- 
-
-    - name: Compile Java 
-
-      run: | 
-
-        cd Pongkrit /HolidayTravelVehicles  
-
-        javac -d . *.java 
-
-      # Compile java file from directory
+      - name: Compile Java
+        run: |
+          PROJECT_DIR="HolidayTravelVehicles"
+          if [ -d "$PROJECT_DIR" ]; then
+            echo "Directory $PROJECT_DIR found."
+            cd $PROJECT_DIR
+            javac -d . *.java
+          else
+            echo "Error: Directory $PROJECT_DIR not found!"
+            exit 1
+          fi
